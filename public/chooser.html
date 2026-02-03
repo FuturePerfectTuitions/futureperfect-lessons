@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Future Perfect – Choose Year</title>
+
+  <style>
+    :root{
+      --red:#d71920;
+      --blue:#0b2a6f;
+      --border:#e5e5e5;
+      --text:#111;
+      --muted:#666;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:24px;
+      font-family:"Segoe UI",Arial,sans-serif;
+      color:var(--text);
+      background:#fff;
+    }
+    .frame{
+      max-width:1000px;
+      margin:0 auto;
+      padding:10px;
+      border-radius:22px;
+      background:repeating-linear-gradient(
+        45deg,
+        var(--red) 0 14px,
+        #fff 14px 28px,
+        var(--blue) 28px 42px,
+        #fff 42px 56px
+      );
+    }
+    .panel{
+      background:#fff;
+      border-radius:16px;
+      padding:18px;
+      border:1px solid var(--border);
+    }
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .logo{
+      height:46px;
+      width:auto;
+    }
+    h1{
+      font-size:22px;
+      margin:0;
+    }
+    .muted{ color:var(--muted); font-size:14px; margin-top:4px; }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+    .btn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      text-decoration:none;
+      color:var(--text);
+    }
+    .btn:hover{ border-color:#cfcfcf; }
+    .error{
+      margin-top:14px;
+      padding:12px;
+      border:1px solid #f1c1c1;
+      background:#fff5f5;
+      border-radius:12px;
+      color:#7a0b0b;
+      display:none;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame">
+    <div class="panel">
+      <div class="top">
+        <div>
+          <h1>Choose your year</h1>
+          <div class="muted" id="sub">Loading your access…</div>
+        </div>
+        <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+      </div>
+
+      <div class="grid" id="years"></div>
+      <div class="error" id="err"></div>
+    </div>
+  </div>
+
+<script>
+  const API = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
+
+  function qs(name){
+    return new URLSearchParams(location.search).get(name);
+  }
+
+  function showError(msg){
+    const el = document.getElementById("err");
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+
+  async function run(){
+    const u = qs("u");
+    if(!u){
+      document.getElementById("sub").textContent = "Missing user. Add ?u=demo to the URL.";
+      return;
+    }
+
+    const res = await fetch(`${API}/years?u=${encodeURIComponent(u)}`);
+    if(!res.ok){
+      showError(`Failed to load years (${res.status})`);
+      document.getElementById("sub").textContent = "Could not load access.";
+      return;
+    }
+
+    const years = await res.json();
+    document.getElementById("sub").textContent = `Access granted: ${years.join(", ") || "none"}`;
+
+    const wrap = document.getElementById("years");
+    wrap.innerHTML = "";
+
+    if(!years.length){
+      showError("This user has no years assigned.");
+      return;
+    }
+
+    for(const y of years){
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = `lessons.html?u=${encodeURIComponent(u)}&year=${encodeURIComponent(y)}`;
+      a.textContent = y;
+      wrap.appendChild(a);
+    }
+  }
+
+  run().catch(err => showError(String(err)));
+</script>
+</body>
+</html>
