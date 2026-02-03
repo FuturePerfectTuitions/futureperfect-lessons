@@ -11,8 +11,9 @@
       --blue:#0b2a6f;
       --border:#e7e7e7;
       --text:#121212;
-      --muted:#666;
+      --muted:#6b7280;
       --bg:#ffffff;
+      --soft:#f7f7f8;
     }
 
     *{ box-sizing:border-box; }
@@ -51,6 +52,7 @@
       justify-content:space-between;
       gap:12px;
       margin-bottom:14px;
+      flex-wrap:wrap;
     }
 
     .brand{
@@ -85,6 +87,7 @@
       gap:10px;
       flex-wrap:wrap;
       justify-content:flex-end;
+      align-items:center;
     }
 
     .btn{
@@ -93,7 +96,7 @@
       background:#fff;
       padding:10px 12px;
       border-radius:12px;
-      font-weight:600;
+      font-weight:700;
       cursor:pointer;
       text-decoration:none;
       color:var(--text);
@@ -101,35 +104,91 @@
       align-items:center;
       gap:8px;
       user-select:none;
+      white-space:nowrap;
     }
     .btn:hover{ border-color:#cfcfcf; }
     .btn.primary{
       border-color:transparent;
       background:var(--blue);
       color:#fff;
+      padding:10px 16px;
     }
     .btn.primary:hover{ filter:brightness(0.96); }
+    .btn:disabled{
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+
+    /* Search row */
+    .filters{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+      margin-bottom:14px;
+    }
+    .searchWrap{
+      flex:1 1 520px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:12px 14px;
+      background:#fff;
+    }
+    .searchIcon{
+      font-size:18px;
+      line-height:1;
+      color:var(--muted);
+      user-select:none;
+    }
+    .searchInput{
+      border:0;
+      outline:none;
+      width:100%;
+      font-size:16px;
+      font-weight:600;
+      color:var(--text);
+      background:transparent;
+    }
+    .searchInput::placeholder{
+      color:#9aa0a6;
+      font-weight:600;
+    }
+    .countPill{
+      flex:0 0 auto;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--soft);
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+      white-space:nowrap;
+    }
 
     .grid{
       display:grid;
       grid-template-columns: 1fr;
       gap:12px;
-      margin-top:14px;
     }
 
     .card{
       border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
+      border-radius:16px;
+      padding:16px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
+      background:#fff;
     }
 
     .cardTitle{
-      font-weight:800;
-      font-size:18px;
+      font-weight:850;
+      font-size:16px;
       line-height:1.25;
     }
 
@@ -186,21 +245,30 @@
     }
 
     .notice{
-      margin-top:10px;
-      font-size:12px;
+      margin-top:12px;
+      font-size:12.5px;
       color:var(--muted);
       line-height:1.4;
     }
 
     .error{
       margin-top:12px;
-      padding:12px;
+      padding:12px 14px;
       border:1px solid #f1c6c6;
       background:#fff6f6;
       border-radius:14px;
       color:#8a1f1f;
-      font-weight:600;
-      white-space:pre-wrap;
+      font-weight:800;
+    }
+
+    @media (max-width: 640px){
+      body{ padding:14px; }
+      h1{ font-size:22px; }
+      .logo{ height:38px; }
+      .btn.primary{ width:100%; justify-content:center; }
+      .actions{ width:100%; justify-content:flex-start; }
+      .card{ align-items:flex-start; flex-direction:column; }
+      .right{ width:100%; justify-content:flex-end; }
     }
   </style>
 </head>
@@ -224,8 +292,17 @@
         </div>
       </div>
 
-      <div id="errorBox" class="error" style="display:none;"></div>
+      <div class="filters" id="filtersRow" style="display:none;">
+        <div class="searchWrap">
+          <div class="searchIcon">🔎</div>
+          <input id="searchInput" class="searchInput" type="search"
+                 placeholder="Search lessons (e.g. Fractions, Algebra, BIDMAS)…"
+                 autocomplete="off" />
+        </div>
+        <div class="countPill" id="countPill">0 lessons</div>
+      </div>
 
+      <div id="errorBox" class="error" style="display:none;"></div>
       <div id="list" class="grid" aria-live="polite"></div>
 
       <div id="playerWrap" class="playerWrap" style="display:none;">
@@ -249,7 +326,7 @@
       </div>
 
       <div class="notice">
-        🔒 These videos are for enrolled Future Perfect Tuitions students only.
+        🔒 These videos are for enrolled Future Perfect Tuitions students only. Download options should remain disabled/hidden.
       </div>
 
     </div>
@@ -277,6 +354,12 @@
   const $backBtn = document.getElementById("backBtn");
   const $refresh = document.getElementById("refreshBtn");
 
+  const $filtersRow = document.getElementById("filtersRow");
+  const $searchInput = document.getElementById("searchInput");
+  const $countPill = document.getElementById("countPill");
+
+  let allLessons = [];
+
   function showError(msg){
     $err.textContent = msg;
     $err.style.display = "block";
@@ -293,11 +376,14 @@
     return url.toString();
   }
 
+  // ScreenPal player URL (matches your snippet)
   function screenpalPlayerUrl(spId){
     const id = encodeURIComponent(spId);
+    // dcc=1 is your "disable content controls"/download-hiding intent
     return `https://go.screenpal.com/player/${id}?ff=1&ahc=1&dcc=1&bg=transparent`;
   }
 
+  // Optional appearance JS (as per your snippet)
   function screenpalAppearanceScriptUrl(spId){
     const id = encodeURIComponent(spId);
     return `https://go.screenpal.com/consumption/player_appearance/${id}/1.777778`;
@@ -320,7 +406,6 @@
     $playerTitle.textContent = safeText(lesson.title || "Lesson");
     injectAppearanceScript(spId);
     $player.src = screenpalPlayerUrl(spId);
-
     $playerWrap.style.display = "block";
     $playerWrap.scrollIntoView({ behavior:"smooth", block:"start" });
   }
@@ -331,13 +416,19 @@
     $playerWrap.style.display = "none";
   }
 
+  function updateCount(n){
+    $countPill.textContent = (n === 1) ? "1 lesson" : `${n} lessons`;
+  }
+
   function renderList(items){
     $list.innerHTML = "";
 
     if (!items || !items.length){
       const empty = document.createElement("div");
       empty.className = "card";
-      empty.innerHTML = `<div><div class="cardTitle">No lessons found.</div></div>`;
+      empty.innerHTML = `<div>
+        <div class="cardTitle">No lessons found.</div>
+      </div>`;
       $list.appendChild(empty);
       return;
     }
@@ -352,6 +443,7 @@
       const title = document.createElement("div");
       title.className = "cardTitle";
       title.textContent = safeText(it.title || `Lesson ${idx+1}`);
+
       left.appendChild(title);
 
       const right = document.createElement("div");
@@ -377,9 +469,28 @@
     });
   }
 
+  function applySearch(){
+    const q = ($searchInput.value || "").trim().toLowerCase();
+    if (!q){
+      renderList(allLessons);
+      updateCount(allLessons.length);
+      return;
+    }
+    const filtered = allLessons.filter(l =>
+      safeText(l.title).toLowerCase().includes(q)
+    );
+    renderList(filtered);
+    updateCount(filtered.length);
+  }
+
   async function load(){
     clearError();
     closePlayer();
+    allLessons = [];
+    $filtersRow.style.display = "none";
+    $searchInput.value = "";
+    updateCount(0);
+    $list.innerHTML = "";
 
     if (!u || !year){
       $h1.textContent = "Lessons";
@@ -398,6 +509,7 @@
       url.searchParams.set("year", year);
 
       const res = await fetch(url.toString(), { method:"GET" });
+
       if (!res.ok){
         const txt = await res.text().catch(() => "");
         throw new Error(`API error ${res.status}. ${txt}`.trim());
@@ -406,8 +518,12 @@
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error("API returned unexpected data (not an array).");
 
+      allLessons = data;
+
       $sub.textContent = `Showing ${data.length} lesson(s) for ${u}.`;
-      renderList(data);
+      $filtersRow.style.display = "flex";
+      renderList(allLessons);
+      updateCount(allLessons.length);
 
     }catch(err){
       $sub.textContent = "Could not load lessons.";
@@ -417,6 +533,7 @@
 
   $refresh.addEventListener("click", load);
   $closePlayer.addEventListener("click", closePlayer);
+  $searchInput.addEventListener("input", applySearch);
 
   load();
 })();
