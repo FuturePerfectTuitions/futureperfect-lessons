@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Future Perfect – Lessons</title>
+
+  <style>
+    :root{
+      --red:#d71920;
+      --blue:#0b2a6f;
+      --border:#e7e7e7;
+      --text:#121212;
+      --muted:#666;
+      --bg:#ffffff;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:24px;
+      font-family:"Segoe UI", Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .frame{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px;
+      border-radius:22px;
+      background:repeating-linear-gradient(
+        45deg,
+        var(--red) 0 14px,
+        #fff 14px 28px,
+        var(--blue) 28px 42px,
+        #fff 42px 56px
+      );
+    }
+
+    .panel{
+      background:#fff;
+      border-radius:16px;
+      padding:18px;
+      border:1px solid var(--border);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .logo{
+      height:42px;
+      width:auto;
+      display:block;
+    }
+
+    .titles{ min-width:0; }
+
+    h1{
+      margin:0;
+      font-size:26px;
+      line-height:1.2;
+    }
+
+    .sub{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .btn:hover{ border-color:#cfcfcf; }
+    .btn.primary{
+      border-color:transparent;
+      background:var(--blue);
+      color:#fff;
+    }
+    .btn.primary:hover{ filter:brightness(0.96); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .card{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .cardTitle{
+      font-weight:700;
+      line-height:1.25;
+    }
+
+    .meta{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+      word-break:break-all;
+    }
+
+    .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-shrink:0;
+    }
+
+    .pill{
+      font-size:12px;
+      font-weight:700;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+      background:#fff;
+    }
+
+    /* Player area */
+    .playerWrap{
+      margin-top:16px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .playerTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+    }
+
+    .playerTitle{
+      font-weight:800;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .playerBox{
+      position:relative;
+      width:100%;
+      padding-top:56.25%; /* 16:9 */
+      height:0;
+      background:#000;
+    }
+
+    .player{
+      position:absolute;
+      top:0; left:0;
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#000;
+    }
+
+    .notice{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .error{
+      margin-top:12px;
+      padding:12px;
+      border:1px solid #f1c6c6;
+      background:#fff6f6;
+      border-radius:14px;
+      color:#8a1f1f;
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame">
+    <div class="panel">
+
+      <div class="topbar">
+        <div class="brand">
+          <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+          <div class="titles">
+            <h1 id="h1">Lessons</h1>
+            <div class="sub" id="sub">Loading…</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" id="backBtn" href="chooser.html">← Back</a>
+          <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
+        </div>
+      </div>
+
+      <div id="errorBox" class="error" style="display:none;"></div>
+
+      <div id="list" class="grid" aria-live="polite"></div>
+
+      <div id="playerWrap" class="playerWrap" style="display:none;">
+        <div class="playerTop">
+          <div class="playerTitle" id="playerTitle">Lesson</div>
+          <button class="btn" id="closePlayerBtn" type="button">Close</button>
+        </div>
+
+        <!-- We optionally load ScreenPal appearance JS here -->
+        <div id="appearanceSlot"></div>
+
+        <div class="playerBox">
+          <iframe
+            id="player"
+            class="player"
+            scrolling="no"
+            allowfullscreen="true"
+            allow="autoplay; fullscreen; picture-in-picture"
+            src="about:blank"></iframe>
+        </div>
+      </div>
+
+      <div class="notice">
+        🔒 These videos are for enrolled Future Perfect Tuitions students only.
+      </div>
+
+    </div>
+  </div>
+
+<script>
+(function(){
+  const API_BASE = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
+
+  const qs = new URLSearchParams(location.search);
+  const u = (qs.get("u") || "").trim();
+  const year = (qs.get("year") || "").trim();
+
+  const $h1 = document.getElementById("h1");
+  const $sub = document.getElementById("sub");
+  const $list = document.getElementById("list");
+  const $err = document.getElementById("errorBox");
+
+  const $playerWrap = document.getElementById("playerWrap");
+  const $player = document.getElementById("player");
+  const $playerTitle = document.getElementById("playerTitle");
+  const $closePlayer = document.getElementById("closePlayerBtn");
+  const $appearanceSlot = document.getElementById("appearanceSlot");
+
+  const $backBtn = document.getElementById("backBtn");
+  const $refresh = document.getElementById("refreshBtn");
+
+  function showError(msg){
+    $err.textContent = msg;
+    $err.style.display = "block";
+  }
+  function clearError(){
+    $err.style.display = "none";
+    $err.textContent = "";
+  }
+  function safeText(s){ return String(s || ""); }
+
+  function buildChooserLink(){
+    const url = new URL("chooser.html", location.href);
+    if (u) url.searchParams.set("u", u);
+    return url.toString();
+  }
+
+  // ✅ ScreenPal correct player URL (matches your snippet)
+  function screenpalPlayerUrl(spId){
+    const id = encodeURIComponent(spId);
+    return `https://go.screenpal.com/player/${id}?ff=1&ahc=1&dcc=1&bg=transparent`;
+  }
+
+  // Optional appearance JS (also from your snippet)
+  function screenpalAppearanceScriptUrl(spId){
+    const id = encodeURIComponent(spId);
+    return `https://go.screenpal.com/consumption/player_appearance/${id}/1.777778`;
+  }
+
+  function clearAppearanceScript(){
+    $appearanceSlot.innerHTML = "";
+  }
+
+  function injectAppearanceScript(spId){
+    // Some accounts don’t need this; harmless if it loads.
+    clearAppearanceScript();
+    const s = document.createElement("script");
+    s.src = screenpalAppearanceScriptUrl(spId);
+    s.async = true;
+    $appearanceSlot.appendChild(s);
+  }
+
+  function openPlayer(lesson){
+    const spId = lesson.sp;
+
+    $playerTitle.textContent = safeText(lesson.title || "Lesson");
+
+    // optional: load appearance settings
+    injectAppearanceScript(spId);
+
+    // set iframe to ScreenPal player URL
+    $player.src = screenpalPlayerUrl(spId);
+
+    $playerWrap.style.display = "block";
+    $playerWrap.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+
+  function closePlayer(){
+    $player.src = "about:blank";
+    clearAppearanceScript();
+    $playerWrap.style.display = "none";
+  }
+
+  function renderList(items){
+    $list.innerHTML = "";
+
+    if (!items || !items.length){
+      const empty = document.createElement("div");
+      empty.className = "card";
+      empty.innerHTML = `<div>
+        <div class="cardTitle">No lessons found.</div>
+        <div class="meta">This year has no lessons yet (or you don’t have access).</div>
+      </div>`;
+      $list.appendChild(empty);
+      return;
+    }
+
+    items.forEach((it, idx) => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const left = document.createElement("div");
+      left.style.minWidth = "0";
+
+      const title = document.createElement("div");
+      title.className = "cardTitle";
+      title.textContent = safeText(it.title || `Lesson ${idx+1}`);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = `ID: ${safeText(it.sp || "")}`;
+
+      left.appendChild(title);
+      if (it.sp) left.appendChild(meta);
+
+      const right = document.createElement("div");
+      right.className = "right";
+
+      const pill = document.createElement("div");
+      pill.className = "pill";
+      pill.textContent = year || "Year";
+
+      const btn = document.createElement("button");
+      btn.className = "btn primary";
+      btn.type = "button";
+      btn.textContent = "Open lesson";
+      btn.disabled = !it.sp;
+
+      btn.addEventListener("click", () => {
+        closePlayer();
+        openPlayer(it);
+      });
+
+      right.appendChild(pill);
+      right.appendChild(btn);
+
+      card.appendChild(left);
+      card.appendChild(right);
+
+      $list.appendChild(card);
+    });
+  }
+
+  async function load(){
+    clearError();
+    closePlayer();
+
+    if (!u || !year){
+      $h1.textContent = "Lessons";
+      $sub.textContent = "Missing link details.";
+      showError("This page needs a link like: lessons.html?u=demo&year=Y6");
+      return;
+    }
+
+    $backBtn.href = buildChooserLink();
+    $h1.textContent = `Lessons – ${year}`;
+    $sub.textContent = `Loading lessons for ${u}…`;
+
+    try{
+      const url = new URL(API_BASE + "/lessons");
+      url.searchParams.set("u", u);
+      url.searchParams.set("year", year);
+
+      const res = await fetch(url.toString(), { method:"GET" });
+
+      if (!res.ok){
+        const txt = await res.text().catch(() => "");
+        throw new Error(`API error ${res.status}. ${txt}`.trim());
+      }
+
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("API returned unexpected data (not an array).");
+
+      $sub.textContent = `Showing ${data.length} lesson(s) for ${u}.`;
+      renderList(data);
+
+    }catch(err){
+      $sub.textContent = "Could not load lessons.";
+      showError(err && err.message ? err.message : "Unknown error.");
+    }
+  }
+
+  $refresh.addEventListener("click", load);
+  $closePlayer.addEventListener("click", closePlayer);
+
+  load();
+})();
+</script>
+</body>
+</html>
