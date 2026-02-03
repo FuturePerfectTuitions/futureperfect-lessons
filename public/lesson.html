@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Future Perfect – Lesson</title>
+
+  <style>
+    :root{
+      --red:#d71920;
+      --blue:#0b2a6f;
+      --border:#e5e5e5;
+      --text:#111;
+      --muted:#666;
+      --soft:#f7f7f7;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      padding:24px;
+      font-family:"Segoe UI",Arial,sans-serif;
+      color:var(--text);
+      background:#fff;
+    }
+
+    .frame{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px;
+      border-radius:22px;
+      background:repeating-linear-gradient(
+        45deg,
+        var(--red) 0 14px,
+        #fff 14px 28px,
+        var(--blue) 28px 42px,
+        #fff 42px 56px
+      );
+    }
+
+    .panel{
+      background:#fff;
+      border-radius:16px;
+      padding:18px;
+      border:1px solid var(--border);
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .logo{
+      height:42px;
+      width:auto;
+      flex:0 0 auto;
+    }
+
+    h1{
+      font-size:22px;
+      margin:0;
+      line-height:1.2;
+    }
+
+    .meta{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:680px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      text-decoration:none;
+      color:var(--text);
+      user-select:none;
+    }
+
+    .btn:hover{ border-color:#cfcfcf; }
+
+    .btn.primary{
+      background:var(--blue);
+      border-color:var(--blue);
+      color:#fff;
+    }
+
+    .btn.primary:hover{ filter:brightness(0.95); }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      background:#fff;
+    }
+
+    .card{
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .cardHead{
+      padding:12px 14px;
+      background:linear-gradient(#fff,#fff), linear-gradient(90deg, rgba(215,25,32,.08), rgba(11,42,111,.08));
+      background-clip:padding-box, border-box;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .cardTitle{
+      font-weight:700;
+      margin:0;
+      font-size:15px;
+      line-height:1.2;
+    }
+
+    .cardSub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .playerArea{
+      padding:14px;
+      background:var(--soft);
+    }
+
+    /* Make embed look clean */
+    .spWrap{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    /* Error box */
+    .error{
+      margin-top:14px;
+      padding:12px;
+      border:1px solid #f1c1c1;
+      background:#fff5f5;
+      border-radius:12px;
+      color:#7a0b0b;
+      display:none;
+      white-space:pre-wrap;
+    }
+
+    /* Small helper text */
+    .hint{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    /* Optional: soften selection/copy behaviour */
+    .noSelect{
+      -webkit-user-select:none;
+      user-select:none;
+    }
+
+    @media (max-width:700px){
+      body{ padding:16px; }
+      .top{ flex-direction:column; align-items:stretch; }
+      .actions{ justify-content:flex-start; }
+      .meta{ max-width:100%; white-space:normal; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame">
+    <div class="panel">
+
+      <div class="top">
+        <div class="brand">
+          <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+          <div style="min-width:0">
+            <h1 id="title">Lesson</h1>
+            <div class="meta" id="meta">Loading…</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" id="backBtn" href="chooser.html">← Back</a>
+          <button class="btn" id="reloadBtn" type="button">Refresh</button>
+          <span class="pill" id="pillYear">Year: –</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <div>
+            <div class="cardTitle" id="lessonTitle">Loading lesson…</div>
+            <div class="cardSub" id="lessonSub"> </div>
+          </div>
+          <span class="pill noSelect" id="pillId">ID: –</span>
+        </div>
+
+        <div class="playerArea">
+          <div class="spWrap" id="playerWrap">
+            <!-- ScreenPal embed injected here -->
+          </div>
+
+          <div class="hint">
+            Tip: If the video doesn’t start, tap <b>Refresh</b>. Download options are disabled on this page.
+          </div>
+
+          <div class="error" id="err"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // Your Worker API (unchanged)
+  const API = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
+
+  function qs(name){
+    return new URLSearchParams(location.search).get(name);
+  }
+
+  function showError(msg){
+    const el = document.getElementById("err");
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+
+  function setText(id, text){
+    const el = document.getElementById(id);
+    if(el) el.textContent = text;
+  }
+
+  function setHref(id, href){
+    const el = document.getElementById(id);
+    if(el) el.href = href;
+  }
+
+  // Hardening (client-side only — not security, but discourages casual download/copy)
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  document.addEventListener("keydown", (e) => {
+    // Block common "save" and "view source" shortcuts
+    const key = (e.key || "").toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && (key === "s" || key === "u")) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, {capture:true});
+
+  // Build ScreenPal embed (based on your provided snippet)
+  function renderScreenPal(playerId){
+    // NOTE: ScreenPal uses a script URL that includes the ID and aspect ratio.
+    // We'll preserve your exact format, but swap in the ID dynamically.
+    const wrap = document.getElementById("playerWrap");
+    wrap.innerHTML = `
+      <div class="sp-embed-player"
+           data-id="${playerId}"
+           data-aspect-ratio="1.777778"
+           data-padding-top="56.250000%"
+           style="position:relative;width:100%;padding-top:56.250000%;height:0;">
+        <script src="https://go.screenpal.com/consumption/player_appearance/${playerId}/1.777778"></script>
+        <iframe
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+          scrolling="no"
+          src="https://go.screenpal.com/player/${playerId}?ff=1&ahc=1&dcc=0&bg=transparent"
+          allowfullscreen="true">
+        </iframe>
+      </div>
+    `;
+
+    // IMPORTANT:
+    // - We set dcc=0 above to discourage download controls if ScreenPal respects it.
+    // - ScreenPal ultimately controls what appears; true prevention is an account-side setting.
+  }
+
+  async function run(){
+    const u = qs("u");
+    const year = qs("year");
+    const id = qs("id"); // ScreenPal ID
+    const titleFromUrl = qs("title"); // optional
+
+    if(!u){
+      setText("meta","Missing user. Add ?u=demo");
+      showError("Missing query param: u");
+      return;
+    }
+    if(!year){
+      setText("meta","Missing year. Return to chooser.");
+      showError("Missing query param: year");
+      return;
+    }
+    if(!id){
+      setText("meta","Missing lesson id. Go back to lessons list.");
+      showError("Missing query param: id");
+      return;
+    }
+
+    // Update header pills and back link
+    setText("pillYear", `Year: ${year}`);
+    setText("pillId", `ID: ${id}`);
+
+    // Back should preserve user + year (go to lessons list)
+    setHref("backBtn", `lessons.html?u=${encodeURIComponent(u)}&year=${encodeURIComponent(year)}`);
+
+    // Populate page title early
+    const niceTitle = titleFromUrl ? decodeURIComponent(titleFromUrl) : `Lesson – ${year}`;
+    document.title = `Future Perfect – ${niceTitle}`;
+    setText("title", `Lesson – ${year}`);
+    setText("lessonTitle", titleFromUrl ? decodeURIComponent(titleFromUrl) : "Loading lesson…");
+    setText("lessonSub", `User: ${u}`);
+
+    // Validate permission (important) + optionally fetch real title
+    // We fetch the lessons list for this year for this user,
+    // then verify the requested id exists in the permitted list.
+    const res = await fetch(`${API}/lessons?u=${encodeURIComponent(u)}&year=${encodeURIComponent(year)}`);
+    if(!res.ok){
+      setText("meta", `Could not load lesson list (${res.status}).`);
+      showError(`Failed to load lessons from API (${res.status}).`);
+      return;
+    }
+
+    const lessons = await res.json();
+    const match = (Array.isArray(lessons) ? lessons : []).find(x => (x && (x.sp === id)));
+
+    if(!match){
+      setText("meta","Access denied or lesson not found.");
+      showError("This lesson is not available for this user/year, or the ID is incorrect.");
+      return;
+    }
+
+    // Use authoritative title
+    setText("lessonTitle", match.title || "Lesson");
+    setText("meta", `Playing: ${match.title || "Lesson"} (${year})`);
+
+    // Render ScreenPal embed
+    renderScreenPal(id);
+  }
+
+  // Wire refresh button
+  document.getElementById("reloadBtn").addEventListener("click", () => {
+    location.reload();
+  });
+
+  run().catch(err => {
+    setText("meta","An error occurred.");
+    showError(String(err));
+  });
+</script>
+</body>
+</html>
