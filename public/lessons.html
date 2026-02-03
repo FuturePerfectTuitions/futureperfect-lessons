@@ -591,9 +591,8 @@
       title.className = "cardTitle";
       title.textContent = safeText(it.title || `Lesson ${idx+1}`);
 
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = it.sp ? `ID: ${safeText(it.sp)}` : "No video ID set yet.";
+      left.appendChild(title);
+if (it.sp) left.appendChild(meta);
 
       left.appendChild(title);
       left.appendChild(meta);
