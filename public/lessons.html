@@ -128,7 +128,8 @@
     }
 
     .cardTitle{
-      font-weight:700;
+      font-weight:800;
+      font-size:18px;
       line-height:1.25;
     }
 
@@ -159,7 +160,7 @@
     }
 
     .playerTitle{
-      font-weight:800;
+      font-weight:900;
       min-width:0;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -292,13 +293,11 @@
     return url.toString();
   }
 
-  // ScreenPal player URL (matches your snippet)
   function screenpalPlayerUrl(spId){
     const id = encodeURIComponent(spId);
     return `https://go.screenpal.com/player/${id}?ff=1&ahc=1&dcc=1&bg=transparent`;
   }
 
-  // Optional appearance JS (also from your snippet)
   function screenpalAppearanceScriptUrl(spId){
     const id = encodeURIComponent(spId);
     return `https://go.screenpal.com/consumption/player_appearance/${id}/1.777778`;
@@ -319,11 +318,7 @@
   function openPlayer(lesson){
     const spId = lesson.sp;
     $playerTitle.textContent = safeText(lesson.title || "Lesson");
-
-    // optional appearance settings
     injectAppearanceScript(spId);
-
-    // set iframe to ScreenPal player URL
     $player.src = screenpalPlayerUrl(spId);
 
     $playerWrap.style.display = "block";
@@ -342,9 +337,7 @@
     if (!items || !items.length){
       const empty = document.createElement("div");
       empty.className = "card";
-      empty.innerHTML = `<div>
-        <div class="cardTitle">No lessons found.</div>
-      </div>`;
+      empty.innerHTML = `<div><div class="cardTitle">No lessons found.</div></div>`;
       $list.appendChild(empty);
       return;
     }
@@ -359,8 +352,6 @@
       const title = document.createElement("div");
       title.className = "cardTitle";
       title.textContent = safeText(it.title || `Lesson ${idx+1}`);
-
-      // ✅ Student-friendly: NO ID shown
       left.appendChild(title);
 
       const right = document.createElement("div");
@@ -377,7 +368,6 @@
         openPlayer(it);
       });
 
-      // ✅ Student-friendly: NO per-lesson year pill
       right.appendChild(btn);
 
       card.appendChild(left);
@@ -408,7 +398,6 @@
       url.searchParams.set("year", year);
 
       const res = await fetch(url.toString(), { method:"GET" });
-
       if (!res.ok){
         const txt = await res.text().catch(() => "");
         throw new Error(`API error ${res.status}. ${txt}`.trim());
