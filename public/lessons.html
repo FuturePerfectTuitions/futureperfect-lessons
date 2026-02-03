@@ -9,13 +9,26 @@
     :root{
       --red:#d71920;
       --blue:#0b2a6f;
-      --border:#e7e7e7;
-      --text:#121212;
-      --muted:#666;
+
       --bg:#ffffff;
+      --panel:#ffffff;
+      --card:#ffffff;
+
+      --text:#121212;
+      --muted:#6b7280;
+
+      --border:#e7e7e7;
+      --shadow: 0 10px 25px rgba(0,0,0,.06);
+
+      --radius-lg:22px;
+      --radius-md:16px;
+      --radius-sm:12px;
+
+      --focus: 0 0 0 3px rgba(11,42,111,.18);
     }
 
     *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
       padding:24px;
@@ -24,11 +37,12 @@
       color:var(--text);
     }
 
+    /* Airmail frame */
     .frame{
       max-width:1200px;
       margin:0 auto;
       padding:10px;
-      border-radius:22px;
+      border-radius:var(--radius-lg);
       background:repeating-linear-gradient(
         45deg,
         var(--red) 0 14px,
@@ -39,18 +53,30 @@
     }
 
     .panel{
-      background:#fff;
-      border-radius:16px;
-      padding:18px;
+      background:var(--panel);
+      border-radius:var(--radius-md);
       border:1px solid var(--border);
+      overflow:hidden;
+      box-shadow: var(--shadow);
     }
 
-    .topbar{
+    /* Sticky header */
+    .header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:saturate(180%) blur(8px);
+      border-bottom:1px solid var(--border);
+    }
+
+    .headerInner{
+      padding:16px 18px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
+      gap:14px;
+      flex-wrap:wrap;
     }
 
     .brand{
@@ -59,29 +85,28 @@
       gap:12px;
       min-width:0;
     }
-
     .logo{
       height:42px;
       width:auto;
       display:block;
     }
-
     .titles{ min-width:0; }
-
     h1{
       margin:0;
-      font-size:26px;
-      line-height:1.2;
+      font-size:22px;
+      line-height:1.25;
+      letter-spacing:-.2px;
     }
-
     .sub{
       margin:6px 0 0 0;
       color:var(--muted);
-      font-size:14px;
+      font-size:13px;
+      line-height:1.35;
     }
 
-    .actions{
+    .controls{
       display:flex;
+      align-items:center;
       gap:10px;
       flex-wrap:wrap;
       justify-content:flex-end;
@@ -92,8 +117,9 @@
       border:1px solid var(--border);
       background:#fff;
       padding:10px 12px;
-      border-radius:12px;
-      font-weight:600;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
       cursor:pointer;
       text-decoration:none;
       color:var(--text);
@@ -101,35 +127,131 @@
       align-items:center;
       gap:8px;
       user-select:none;
+      transition: transform .06s ease, border-color .15s ease, filter .15s ease;
+      white-space:nowrap;
     }
     .btn:hover{ border-color:#cfcfcf; }
+    .btn:active{ transform: translateY(1px); }
     .btn.primary{
       border-color:transparent;
       background:var(--blue);
       color:#fff;
     }
-    .btn.primary:hover{ filter:brightness(0.96); }
+    .btn.primary:hover{ filter:brightness(0.97); }
+    .btn:focus{ outline:none; box-shadow:var(--focus); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:800;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    /* Search + sort row */
+    .bar{
+      padding:0 18px 16px 18px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .field{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      min-width:240px;
+      flex:1 1 320px;
+    }
+
+    .field input{
+      border:0;
+      outline:none;
+      width:100%;
+      font-size:14px;
+      background:transparent;
+      color:var(--text);
+    }
+    .field input::placeholder{ color:#9aa0aa; }
+
+    .select{
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      padding:10px 12px;
+      font-weight:700;
+      font-size:13px;
+      color:var(--text);
+      cursor:pointer;
+    }
+    .select:focus{ outline:none; box-shadow:var(--focus); }
+
+    /* Main */
+    .content{ padding:18px; }
+
+    .error{
+      margin:0 0 14px 0;
+      padding:12px 14px;
+      border:1px solid #f1c6c6;
+      background:#fff6f6;
+      border-radius:14px;
+      color:#8a1f1f;
+      font-weight:700;
+      display:none;
+      white-space:pre-wrap;
+    }
 
     .grid{
       display:grid;
       grid-template-columns: 1fr;
       gap:12px;
-      margin-top:14px;
     }
 
+    /* Lesson card */
     .card{
       border:1px solid var(--border);
-      border-radius:14px;
+      border-radius:16px;
+      background:var(--card);
       padding:14px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
+      transition: border-color .15s ease, transform .08s ease, box-shadow .15s ease;
+    }
+    .card:hover{
+      border-color:#d7d7d7;
+      box-shadow: 0 12px 26px rgba(0,0,0,.05);
+    }
+
+    .left{ min-width:0; }
+    .titleRow{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-width:0;
     }
 
     .cardTitle{
-      font-weight:700;
+      font-weight:900;
+      font-size:15px;
       line-height:1.25;
+      margin:0;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     .meta{
@@ -148,35 +270,60 @@
 
     .pill{
       font-size:12px;
-      font-weight:700;
-      padding:6px 10px;
+      font-weight:900;
+      padding:7px 10px;
       border-radius:999px;
       border:1px solid var(--border);
       color:var(--muted);
       background:#fff;
     }
 
-    /* Player area */
-    .playerWrap{
-      margin-top:16px;
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      background:#fff;
+    .openBtn{
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
     }
 
-    .playerTop{
+    /* Player overlay (drawer style) */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.36);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      z-index:1000;
+      padding:18px;
+    }
+
+    .drawer{
+      width:min(1100px, 100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow: 0 30px 80px rgba(0,0,0,.25);
+      overflow:hidden;
+      transform: translateY(8px);
+      animation: pop .14s ease-out forwards;
+    }
+
+    @keyframes pop{
+      to{ transform: translateY(0); }
+    }
+
+    .drawerTop{
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
       padding:12px 14px;
       border-bottom:1px solid var(--border);
       background:#fff;
     }
 
-    .playerTitle{
-      font-weight:800;
+    .drawerTitle{
+      font-weight:1000;
+      font-size:14px;
       min-width:0;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -186,36 +333,37 @@
     .playerBox{
       position:relative;
       width:100%;
-      padding-top:56.25%; /* 16:9 */
+      padding-top:56.25%;
       height:0;
       background:#000;
     }
-
     .player{
       position:absolute;
-      top:0; left:0;
+      inset:0;
       width:100%;
       height:100%;
       border:0;
-      display:block;
       background:#000;
     }
 
     .notice{
-      margin-top:10px;
+      margin-top:14px;
       font-size:12px;
       color:var(--muted);
-      line-height:1.4;
+      line-height:1.45;
     }
 
-    .error{
-      margin-top:12px;
-      padding:12px;
-      border:1px solid #f1c6c6;
-      background:#fff6f6;
-      border-radius:14px;
-      color:#8a1f1f;
-      font-weight:600;
+    /* Mobile tweaks */
+    @media (max-width: 680px){
+      body{ padding:16px; }
+      .headerInner{ padding:14px; }
+      .bar{ padding:0 14px 14px 14px; }
+      .content{ padding:14px; }
+      .logo{ height:36px; }
+      h1{ font-size:20px; }
+      .cardTitle{ font-size:14px; }
+      .right{ gap:8px; }
+      .pill{ display:none; }
     }
   </style>
 </head>
@@ -224,49 +372,72 @@
   <div class="frame">
     <div class="panel">
 
-      <div class="topbar">
-        <div class="brand">
-          <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
-          <div class="titles">
-            <h1 id="h1">Lessons</h1>
-            <div class="sub" id="sub">Loading…</div>
+      <header class="header">
+        <div class="headerInner">
+          <div class="brand">
+            <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+            <div class="titles">
+              <h1 id="h1">Lessons</h1>
+              <div class="sub" id="sub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <span class="chip" id="chip">Year</span>
+            <a class="btn" id="backBtn" href="chooser.html">← Back</a>
+            <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
           </div>
         </div>
 
-        <div class="actions">
-          <a class="btn" id="backBtn" href="chooser.html">← Back</a>
-          <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
+        <div class="bar">
+          <div class="field" role="search">
+            🔎
+            <input id="q" type="search" placeholder="Search lessons (e.g. Fractions, Algebra, BIDMAS)…" autocomplete="off">
+          </div>
+
+          <select class="select" id="sort">
+            <option value="default">Sort: Default</option>
+            <option value="az">Sort: A → Z</option>
+            <option value="za">Sort: Z → A</option>
+          </select>
         </div>
-      </div>
+      </header>
 
-      <div id="errorBox" class="error" style="display:none;"></div>
+      <main class="content">
+        <div id="errorBox" class="error"></div>
+        <div id="list" class="grid" aria-live="polite"></div>
 
-      <div id="list" class="grid" aria-live="polite"></div>
+        <div class="notice">
+          🔒 These videos are for enrolled Future Perfect Tuitions students only. Download options should remain disabled/hidden.
+        </div>
+      </main>
 
-      <div id="playerWrap" class="playerWrap" style="display:none;">
-        <div class="playerTop">
-          <div class="playerTitle" id="playerTitle">Lesson</div>
+    </div>
+  </div>
+
+  <!-- Player overlay -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="drawer" role="dialog" aria-modal="true" aria-label="Lesson player">
+      <div class="drawerTop">
+        <div class="drawerTitle" id="playerTitle">Lesson</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn" id="copyIdBtn" type="button" title="Copy lesson ID">Copy ID</button>
           <button class="btn" id="closePlayerBtn" type="button">Close</button>
         </div>
-
-        <!-- We optionally load ScreenPal appearance JS here -->
-        <div id="appearanceSlot"></div>
-
-        <div class="playerBox">
-          <iframe
-            id="player"
-            class="player"
-            scrolling="no"
-            allowfullscreen="true"
-            allow="autoplay; fullscreen; picture-in-picture"
-            src="about:blank"></iframe>
-        </div>
       </div>
 
-      <div class="notice">
-        🔒 These videos are for enrolled Future Perfect Tuitions students only.
-      </div>
+      <!-- optional appearance JS goes here -->
+      <div id="appearanceSlot"></div>
 
+      <div class="playerBox">
+        <iframe
+          id="player"
+          class="player"
+          scrolling="no"
+          allowfullscreen="true"
+          allow="autoplay; fullscreen; picture-in-picture"
+          src="about:blank"></iframe>
+      </div>
     </div>
   </div>
 
@@ -280,17 +451,26 @@
 
   const $h1 = document.getElementById("h1");
   const $sub = document.getElementById("sub");
+  const $chip = document.getElementById("chip");
   const $list = document.getElementById("list");
   const $err = document.getElementById("errorBox");
 
-  const $playerWrap = document.getElementById("playerWrap");
+  const $q = document.getElementById("q");
+  const $sort = document.getElementById("sort");
+
+  const $backBtn = document.getElementById("backBtn");
+  const $refresh = document.getElementById("refreshBtn");
+
+  const $overlay = document.getElementById("overlay");
   const $player = document.getElementById("player");
   const $playerTitle = document.getElementById("playerTitle");
   const $closePlayer = document.getElementById("closePlayerBtn");
   const $appearanceSlot = document.getElementById("appearanceSlot");
+  const $copyIdBtn = document.getElementById("copyIdBtn");
 
-  const $backBtn = document.getElementById("backBtn");
-  const $refresh = document.getElementById("refreshBtn");
+  let RAW = [];      // from API
+  let VIEW = [];     // filtered + sorted
+  let CURRENT_ID = ""; // for copy button
 
   function showError(msg){
     $err.textContent = msg;
@@ -300,7 +480,7 @@
     $err.style.display = "none";
     $err.textContent = "";
   }
-  function safeText(s){ return String(s || ""); }
+  function safeText(s){ return String(s ?? ""); }
 
   function buildChooserLink(){
     const url = new URL("chooser.html", location.href);
@@ -308,13 +488,12 @@
     return url.toString();
   }
 
-  // ✅ ScreenPal correct player URL (matches your snippet)
   function screenpalPlayerUrl(spId){
     const id = encodeURIComponent(spId);
+    // Parameters per your snippet:
     return `https://go.screenpal.com/player/${id}?ff=1&ahc=1&dcc=1&bg=transparent`;
   }
 
-  // Optional appearance JS (also from your snippet)
   function screenpalAppearanceScriptUrl(spId){
     const id = encodeURIComponent(spId);
     return `https://go.screenpal.com/consumption/player_appearance/${id}/1.777778`;
@@ -325,7 +504,6 @@
   }
 
   function injectAppearanceScript(spId){
-    // Some accounts don’t need this; harmless if it loads.
     clearAppearanceScript();
     const s = document.createElement("script");
     s.src = screenpalAppearanceScriptUrl(spId);
@@ -335,36 +513,70 @@
 
   function openPlayer(lesson){
     const spId = lesson.sp;
-
+    CURRENT_ID = safeText(spId || "");
     $playerTitle.textContent = safeText(lesson.title || "Lesson");
 
-    // optional: load appearance settings
+    // Optional appearance loader
     injectAppearanceScript(spId);
 
-    // set iframe to ScreenPal player URL
+    // Load ScreenPal player
     $player.src = screenpalPlayerUrl(spId);
 
-    $playerWrap.style.display = "block";
-    $playerWrap.scrollIntoView({ behavior:"smooth", block:"start" });
+    // Show overlay
+    $overlay.style.display = "flex";
+    $overlay.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
   }
 
   function closePlayer(){
     $player.src = "about:blank";
     clearAppearanceScript();
-    $playerWrap.style.display = "none";
+    $overlay.style.display = "none";
+    $overlay.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+    CURRENT_ID = "";
+  }
+
+  function matchesQuery(item, query){
+    if (!query) return true;
+    const t = (item.title || "").toLowerCase();
+    const id = (item.sp || "").toLowerCase();
+    return t.includes(query) || id.includes(query);
+  }
+
+  function applyFilterSort(){
+    const query = ($q.value || "").trim().toLowerCase();
+    const mode = $sort.value;
+
+    VIEW = RAW.filter(it => matchesQuery(it, query));
+
+    if (mode === "az"){
+      VIEW.sort((a,b) => safeText(a.title).localeCompare(safeText(b.title)));
+    } else if (mode === "za"){
+      VIEW.sort((a,b) => safeText(b.title).localeCompare(safeText(a.title)));
+    }
+
+    renderList(VIEW);
+    $sub.textContent = `Showing ${VIEW.length} lesson(s) for ${u}.`;
   }
 
   function renderList(items){
     $list.innerHTML = "";
 
     if (!items || !items.length){
-      const empty = document.createElement("div");
-      empty.className = "card";
-      empty.innerHTML = `<div>
-        <div class="cardTitle">No lessons found.</div>
-        <div class="meta">This year has no lessons yet (or you don’t have access).</div>
-      </div>`;
-      $list.appendChild(empty);
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="left">
+          <div class="cardTitle">No lessons found</div>
+          <div class="meta">Try clearing the search, or you may not have access to this year.</div>
+        </div>
+        <div class="right">
+          <span class="pill">${safeText(year || "Year")}</span>
+          <button class="btn primary openBtn" type="button" disabled>Open</button>
+        </div>
+      `;
+      $list.appendChild(card);
       return;
     }
 
@@ -373,7 +585,7 @@
       card.className = "card";
 
       const left = document.createElement("div");
-      left.style.minWidth = "0";
+      left.className = "left";
 
       const title = document.createElement("div");
       title.className = "cardTitle";
@@ -381,25 +593,26 @@
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      meta.textContent = `ID: ${safeText(it.sp || "")}`;
+      meta.textContent = it.sp ? `ID: ${safeText(it.sp)}` : "No video ID set yet.";
 
       left.appendChild(title);
-      if (it.sp) left.appendChild(meta);
+      left.appendChild(meta);
 
       const right = document.createElement("div");
       right.className = "right";
 
-      const pill = document.createElement("div");
+      const pill = document.createElement("span");
       pill.className = "pill";
-      pill.textContent = year || "Year";
+      pill.textContent = safeText(year || "Year");
 
       const btn = document.createElement("button");
-      btn.className = "btn primary";
+      btn.className = "btn primary openBtn";
       btn.type = "button";
       btn.textContent = "Open lesson";
       btn.disabled = !it.sp;
 
       btn.addEventListener("click", () => {
+        if (!it.sp) return;
         closePlayer();
         openPlayer(it);
       });
@@ -421,12 +634,14 @@
     if (!u || !year){
       $h1.textContent = "Lessons";
       $sub.textContent = "Missing link details.";
+      $chip.textContent = "—";
       showError("This page needs a link like: lessons.html?u=demo&year=Y6");
       return;
     }
 
     $backBtn.href = buildChooserLink();
     $h1.textContent = `Lessons – ${year}`;
+    $chip.textContent = `Year: ${year}`;
     $sub.textContent = `Loading lessons for ${u}…`;
 
     try{
@@ -444,8 +659,12 @@
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error("API returned unexpected data (not an array).");
 
-      $sub.textContent = `Showing ${data.length} lesson(s) for ${u}.`;
-      renderList(data);
+      RAW = data.map(x => ({
+        title: safeText(x.title || ""),
+        sp: safeText(x.sp || "")
+      }));
+
+      applyFilterSort();
 
     }catch(err){
       $sub.textContent = "Could not load lessons.";
@@ -453,8 +672,35 @@
     }
   }
 
+  // Events
   $refresh.addEventListener("click", load);
+  $q.addEventListener("input", applyFilterSort);
+  $sort.addEventListener("change", applyFilterSort);
+
   $closePlayer.addEventListener("click", closePlayer);
+
+  // Click outside drawer closes overlay
+  $overlay.addEventListener("click", (e) => {
+    if (e.target === $overlay) closePlayer();
+  });
+
+  // ESC closes overlay
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && $overlay.style.display === "flex") closePlayer();
+  });
+
+  // Copy ID
+  $copyIdBtn.addEventListener("click", async () => {
+    if (!CURRENT_ID) return;
+    try{
+      await navigator.clipboard.writeText(CURRENT_ID);
+      $copyIdBtn.textContent = "Copied!";
+      setTimeout(() => $copyIdBtn.textContent = "Copy ID", 900);
+    }catch{
+      // fallback
+      prompt("Copy lesson ID:", CURRENT_ID);
+    }
+  });
 
   load();
 })();
