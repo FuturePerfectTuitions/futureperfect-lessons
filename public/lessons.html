@@ -46,48 +46,52 @@
       border:1px solid var(--border);
     }
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
-      flex-wrap:wrap;
-    }
+    /* ===== New layout blocks ===== */
 
-    .brand{
+    .logoRow{
       display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
+      align-items:flex-start;
+      justify-content:flex-start;
+      margin-bottom:10px;
     }
 
     .logo{
-      height:42px;
+      height:46px;
       width:auto;
       display:block;
     }
 
-    .titles{ min-width:0; }
+    .titleRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
 
     h1{
       margin:0;
-      font-size:26px;
-      line-height:1.2;
+      font-size:30px;
+      line-height:1.15;
+      font-weight:900;
+      letter-spacing:-0.2px;
     }
 
     .sub{
       margin:6px 0 0 0;
       color:var(--muted);
       font-size:14px;
+      font-weight:600;
     }
 
-    .actions{
+    .controlsRow{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
       align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:12px 0 14px;
     }
 
     .btn{
@@ -96,7 +100,7 @@
       background:#fff;
       padding:10px 12px;
       border-radius:12px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       text-decoration:none;
       color:var(--text);
@@ -107,6 +111,7 @@
       white-space:nowrap;
     }
     .btn:hover{ border-color:#cfcfcf; }
+
     .btn.primary{
       border-color:transparent;
       background:var(--blue);
@@ -114,10 +119,7 @@
       padding:10px 16px;
     }
     .btn.primary:hover{ filter:brightness(0.96); }
-    .btn:disabled{
-      opacity:0.55;
-      cursor:not-allowed;
-    }
+    .btn:disabled{ opacity:0.55; cursor:not-allowed; }
 
     /* Search row */
     .filters{
@@ -125,7 +127,6 @@
       gap:12px;
       flex-wrap:wrap;
       align-items:center;
-      margin-top:10px;
       margin-bottom:14px;
     }
     .searchWrap{
@@ -149,13 +150,13 @@
       outline:none;
       width:100%;
       font-size:16px;
-      font-weight:600;
+      font-weight:700;
       color:var(--text);
       background:transparent;
     }
     .searchInput::placeholder{
       color:#9aa0a6;
-      font-weight:600;
+      font-weight:700;
     }
     .countPill{
       flex:0 0 auto;
@@ -164,11 +165,12 @@
       border:1px solid var(--border);
       background:var(--soft);
       color:var(--muted);
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
       white-space:nowrap;
     }
 
+    /* Lessons list */
     .grid{
       display:grid;
       grid-template-columns: 1fr;
@@ -187,7 +189,7 @@
     }
 
     .cardTitle{
-      font-weight:850;
+      font-weight:900;
       font-size:16px;
       line-height:1.25;
     }
@@ -199,7 +201,7 @@
       flex-shrink:0;
     }
 
-    /* Player area */
+    /* Player */
     .playerWrap{
       margin-top:16px;
       border:1px solid var(--border);
@@ -229,7 +231,7 @@
     .playerBox{
       position:relative;
       width:100%;
-      padding-top:56.25%; /* 16:9 */
+      padding-top:56.25%;
       height:0;
       background:#000;
     }
@@ -249,6 +251,7 @@
       font-size:12.5px;
       color:var(--muted);
       line-height:1.4;
+      font-weight:600;
     }
 
     .error{
@@ -258,17 +261,17 @@
       background:#fff6f6;
       border-radius:14px;
       color:#8a1f1f;
-      font-weight:800;
+      font-weight:900;
     }
 
     @media (max-width: 640px){
       body{ padding:14px; }
-      h1{ font-size:22px; }
-      .logo{ height:38px; }
-      .btn.primary{ width:100%; justify-content:center; }
-      .actions{ width:100%; justify-content:flex-start; }
+      h1{ font-size:24px; }
+      .logo{ height:42px; }
+      .btn.primary{ justify-content:center; }
       .card{ align-items:flex-start; flex-direction:column; }
       .right{ width:100%; justify-content:flex-end; }
+      .controlsRow{ flex-direction:row; }
     }
   </style>
 </head>
@@ -277,21 +280,26 @@
   <div class="frame">
     <div class="panel">
 
-      <div class="topbar">
-        <div class="brand">
-          <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
-          <div class="titles">
-            <h1 id="h1">Lessons</h1>
-            <div class="sub" id="sub">Loading…</div>
-          </div>
-        </div>
+      <!-- 1) Logo at the very top -->
+      <div class="logoRow">
+        <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+      </div>
 
-        <div class="actions">
-          <a class="btn" id="backBtn" href="chooser.html">← Back</a>
-          <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
+      <!-- 2) Under that: Lessons - Year 6 -->
+      <div class="titleRow">
+        <div>
+          <h1 id="h1">Lessons</h1>
+          <div class="sub" id="sub">Loading…</div>
         </div>
       </div>
 
+      <!-- 3) Under that: Back left, Refresh right -->
+      <div class="controlsRow">
+        <a class="btn" id="backBtn" href="chooser.html">← Back</a>
+        <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
+      </div>
+
+      <!-- 4) Search bar (always visible when u/year are present) -->
       <div class="filters" id="filtersRow" style="display:none;">
         <div class="searchWrap">
           <div class="searchIcon">🔎</div>
@@ -303,6 +311,8 @@
       </div>
 
       <div id="errorBox" class="error" style="display:none;"></div>
+
+      <!-- 5) Then start list -->
       <div id="list" class="grid" aria-live="polite"></div>
 
       <div id="playerWrap" class="playerWrap" style="display:none;">
@@ -311,7 +321,6 @@
           <button class="btn" id="closePlayerBtn" type="button">Close</button>
         </div>
 
-        <!-- Optional ScreenPal appearance JS -->
         <div id="appearanceSlot"></div>
 
         <div class="playerBox">
@@ -370,20 +379,26 @@
   }
   function safeText(s){ return String(s || ""); }
 
+  function prettyYearLabel(y){
+    // Y6 -> Year 6, Y511plus -> Year 5 (11+), Y4 -> Year 4 etc.
+    const m = /^Y(\d)(11plus)?$/i.exec(y || "");
+    if (!m) return y || "Year";
+    const n = m[1];
+    const is11 = !!m[2];
+    return is11 ? `Year ${n} (11+)` : `Year ${n}`;
+  }
+
   function buildChooserLink(){
     const url = new URL("chooser.html", location.href);
     if (u) url.searchParams.set("u", u);
     return url.toString();
   }
 
-  // ScreenPal player URL (matches your snippet)
   function screenpalPlayerUrl(spId){
     const id = encodeURIComponent(spId);
-    // dcc=1 is your "disable content controls"/download-hiding intent
     return `https://go.screenpal.com/player/${id}?ff=1&ahc=1&dcc=1&bg=transparent`;
   }
 
-  // Optional appearance JS (as per your snippet)
   function screenpalAppearanceScriptUrl(spId){
     const id = encodeURIComponent(spId);
     return `https://go.screenpal.com/consumption/player_appearance/${id}/1.777778`;
@@ -487,7 +502,6 @@
     clearError();
     closePlayer();
     allLessons = [];
-    $filtersRow.style.display = "none";
     $searchInput.value = "";
     updateCount(0);
     $list.innerHTML = "";
@@ -495,12 +509,16 @@
     if (!u || !year){
       $h1.textContent = "Lessons";
       $sub.textContent = "Missing link details.";
+      $filtersRow.style.display = "none";
       showError("This page needs a link like: lessons.html?u=demo&year=Y6");
       return;
     }
 
+    $filtersRow.style.display = "flex"; // ALWAYS show search when link is valid
     $backBtn.href = buildChooserLink();
-    $h1.textContent = `Lessons – ${year}`;
+
+    const yearLabel = prettyYearLabel(year);
+    $h1.textContent = `Lessons – ${yearLabel}`;
     $sub.textContent = `Loading lessons for ${u}…`;
 
     try{
@@ -521,7 +539,6 @@
       allLessons = data;
 
       $sub.textContent = `Showing ${data.length} lesson(s) for ${u}.`;
-      $filtersRow.style.display = "flex";
       renderList(allLessons);
       updateCount(allLessons.length);
 
