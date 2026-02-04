@@ -18,8 +18,8 @@
       margin:0;
       padding:24px;
       font-family:"Segoe UI",Arial,sans-serif;
-      color:var(--text);
       background:#fff;
+      color:var(--text);
     }
     .frame{
       max-width:1000px;
@@ -42,49 +42,62 @@
     }
     .top{
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:14px;
-      margin-bottom:14px;
+      margin-bottom:12px;
     }
     .logo{
       height:46px;
-      width:auto;
     }
     h1{
-      font-size:22px;
       margin:0;
+      font-size:22px;
     }
-    .muted{ color:var(--muted); font-size:14px; margin-top:4px; }
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:4px;
+    }
+
+    .actionRow{
+      display:flex;
+      justify-content:flex-end;
+      margin:10px 0;
+    }
+
+    .btnSmall{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:var(--blue);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
       gap:12px;
-      margin-top:16px;
+      margin-top:18px;
     }
     .btn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:14px 12px;
+      padding:14px;
       border-radius:14px;
       border:1px solid var(--border);
       background:#fff;
-      cursor:pointer;
-      font-weight:600;
+      text-align:center;
+      font-weight:700;
       text-decoration:none;
       color:var(--text);
     }
-    .btn:hover{ border-color:#cfcfcf; }
-    .error{
-      margin-top:14px;
-      padding:12px;
-      border:1px solid #f1c1c1;
-      background:#fff5f5;
-      border-radius:12px;
-      color:#7a0b0b;
-      display:none;
-      white-space:pre-wrap;
+
+    .notice{
+      margin-top:18px;
+      font-size:12px;
+      color:var(--muted);
+      text-align:center;
     }
   </style>
 </head>
@@ -92,42 +105,50 @@
 <body>
   <div class="frame">
     <div class="panel">
+
       <div class="top">
         <div>
           <h1>Choose your year</h1>
-          <div class="muted" id="sub">Loading your access…</div>
+          <div class="muted" id="sub">Loading…</div>
         </div>
-        <img class="logo" src="assets/fpt-logo.png" alt="Future Perfect Tuitions">
+        <img src="assets/fpt-logo.png" class="logo" alt="Future Perfect Tuitions">
       </div>
 
-      <div class="grid" id="years"></div>
-      <div class="error" id="err"></div>
+      <div class="actionRow">
+        <button id="logoutBtn" class="btnSmall">Log out</button>
+      </div>
+
+      <div id="years" class="grid"></div>
+
+      <div class="notice">
+        🔒 Videos are proprietary material belonging to Future Perfect Tuitions.
+        These must not be shared, copied, or distributed outside of Future Perfect Tuitions.
+        <br><br>
+        Access is provided only while the child is enrolled and will be withdrawn once the student is no longer on roll.
+      </div>
+
     </div>
   </div>
 
 <script>
   const API = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
 
-  function showError(msg){
-    const el = document.getElementById("err");
-    el.style.display = "block";
-    el.textContent = msg;
+  function logout(){
+    sessionStorage.removeItem("fpt_u");
+    sessionStorage.removeItem("fpt_p");
+    location.href = "index.html";
   }
 
   function getAuth(){
-    const u = (sessionStorage.getItem("fpt_u") || "").trim();
-    const p = (sessionStorage.getItem("fpt_p") || "").trim();
+    const u = sessionStorage.getItem("fpt_u");
+    const p = sessionStorage.getItem("fpt_p");
     if(!u || !p) return null;
-    return { u, p, header: "Basic " + btoa(u + ":" + p) };
+    return { header: "Basic " + btoa(u + ":" + p) };
   }
 
   function yearLabel(y){
     const m = /^Y(\d+)$/.exec(y);
     return m ? `Year ${m[1]}` : y;
-  }
-
-  function friendlyName(me){
-    return (me && me.name) ? me.name : "there";
   }
 
   async function run(){
@@ -137,62 +158,25 @@
       return;
     }
 
-    // 1) Fetch user info for greeting
-    const meRes = await fetch(`${API}/me`, {
-      method: "GET",
-      headers: { "Authorization": auth.header }
-    });
+    document.getElementById("logoutBtn").onclick = logout;
 
-    if(!meRes.ok){
-      // auth expired/invalid
-      sessionStorage.removeItem("fpt_u");
-      sessionStorage.removeItem("fpt_p");
-      location.href = "index.html";
-      return;
-    }
-
-    const me = await meRes.json();
-
-    // 2) Friendly subheading (no "Access granted")
+    const me = await fetch(`${API}/me`, { headers:{ Authorization: auth.header } }).then(r => r.json());
     document.getElementById("sub").textContent =
-      `Hi ${friendlyName(me)}, which year's lessons would you like to study?`;
+      `Hi ${me.name}, which year's lessons would you like to study?`;
 
-    // 3) Fetch years
-    const res = await fetch(`${API}/years`, {
-      method: "GET",
-      headers: { "Authorization": auth.header }
-    });
-
-    if(!res.ok){
-      showError(`Failed to load years (${res.status})`);
-      if (res.status === 401) {
-        sessionStorage.removeItem("fpt_u");
-        sessionStorage.removeItem("fpt_p");
-        setTimeout(() => location.href = "index.html", 600);
-      }
-      return;
-    }
-
-    const years = await res.json();
+    const years = await fetch(`${API}/years`, { headers:{ Authorization: auth.header } }).then(r => r.json());
 
     const wrap = document.getElementById("years");
-    wrap.innerHTML = "";
-
-    if(!years.length){
-      showError("This user has no years assigned.");
-      return;
-    }
-
-    for(const y of years){
+    years.forEach(y => {
       const a = document.createElement("a");
       a.className = "btn";
-      a.href = `lessons.html?year=${encodeURIComponent(y)}`;  // keep Y6 in URL
-      a.textContent = yearLabel(y);                           // show "Year 6"
+      a.href = `lessons.html?year=${y}`;
+      a.textContent = yearLabel(y);
       wrap.appendChild(a);
-    }
+    });
   }
 
-  run().catch(err => showError(String(err)));
+  run();
 </script>
 </body>
 </html>
