@@ -121,6 +121,15 @@
     return { u, p, header: "Basic " + btoa(u + ":" + p) };
   }
 
+  function yearLabel(y){
+    const m = /^Y(\d+)$/.exec(y);
+    return m ? `Year ${m[1]}` : y;
+  }
+
+  function friendlyName(me){
+    return (me && me.name) ? me.name : "there";
+  }
+
   async function run(){
     const auth = getAuth();
     if(!auth){
@@ -128,6 +137,27 @@
       return;
     }
 
+    // 1) Fetch user info for greeting
+    const meRes = await fetch(`${API}/me`, {
+      method: "GET",
+      headers: { "Authorization": auth.header }
+    });
+
+    if(!meRes.ok){
+      // auth expired/invalid
+      sessionStorage.removeItem("fpt_u");
+      sessionStorage.removeItem("fpt_p");
+      location.href = "index.html";
+      return;
+    }
+
+    const me = await meRes.json();
+
+    // 2) Friendly subheading (no "Access granted")
+    document.getElementById("sub").textContent =
+      `Hi ${friendlyName(me)}, which year's lessons would you like to study?`;
+
+    // 3) Fetch years
     const res = await fetch(`${API}/years`, {
       method: "GET",
       headers: { "Authorization": auth.header }
@@ -135,7 +165,6 @@
 
     if(!res.ok){
       showError(`Failed to load years (${res.status})`);
-      document.getElementById("sub").textContent = "Could not load access.";
       if (res.status === 401) {
         sessionStorage.removeItem("fpt_u");
         sessionStorage.removeItem("fpt_p");
@@ -145,7 +174,6 @@
     }
 
     const years = await res.json();
-    document.getElementById("sub").textContent = `Access granted: ${years.join(", ") || "none"}`;
 
     const wrap = document.getElementById("years");
     wrap.innerHTML = "";
@@ -158,8 +186,8 @@
     for(const y of years){
       const a = document.createElement("a");
       a.className = "btn";
-      a.href = `lessons.html?year=${encodeURIComponent(y)}`;
-      a.textContent = y;
+      a.href = `lessons.html?year=${encodeURIComponent(y)}`;  // keep Y6 in URL
+      a.textContent = yearLabel(y);                           // show "Year 6"
       wrap.appendChild(a);
     }
   }
