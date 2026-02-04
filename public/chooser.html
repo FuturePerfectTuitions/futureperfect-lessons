@@ -108,27 +108,39 @@
 <script>
   const API = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
 
-  function qs(name){
-    return new URLSearchParams(location.search).get(name);
-  }
-
   function showError(msg){
     const el = document.getElementById("err");
     el.style.display = "block";
     el.textContent = msg;
   }
 
+  function getAuth(){
+    const u = (sessionStorage.getItem("fpt_u") || "").trim();
+    const p = (sessionStorage.getItem("fpt_p") || "").trim();
+    if(!u || !p) return null;
+    return { u, p, header: "Basic " + btoa(u + ":" + p) };
+  }
+
   async function run(){
-    const u = qs("u");
-    if(!u){
-      document.getElementById("sub").textContent = "Missing user. Add ?u=demo to the URL.";
+    const auth = getAuth();
+    if(!auth){
+      location.href = "index.html";
       return;
     }
 
-    const res = await fetch(`${API}/years?u=${encodeURIComponent(u)}`);
+    const res = await fetch(`${API}/years`, {
+      method: "GET",
+      headers: { "Authorization": auth.header }
+    });
+
     if(!res.ok){
       showError(`Failed to load years (${res.status})`);
       document.getElementById("sub").textContent = "Could not load access.";
+      if (res.status === 401) {
+        sessionStorage.removeItem("fpt_u");
+        sessionStorage.removeItem("fpt_p");
+        setTimeout(() => location.href = "index.html", 600);
+      }
       return;
     }
 
@@ -146,7 +158,7 @@
     for(const y of years){
       const a = document.createElement("a");
       a.className = "btn";
-      a.href = `lessons.html?u=${encodeURIComponent(u)}&year=${encodeURIComponent(y)}`;
+      a.href = `lessons.html?year=${encodeURIComponent(y)}`;
       a.textContent = y;
       wrap.appendChild(a);
     }
