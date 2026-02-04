@@ -46,7 +46,6 @@
       border:1px solid var(--border);
     }
 
-    /* --- TOP STACK (logo, title, buttons) --- */
     .logoRow{
       display:flex;
       align-items:center;
@@ -112,7 +111,6 @@
 
     .btn:active{ transform:translateY(1px); }
 
-    /* --- SEARCH --- */
     .searchWrap{
       position:relative;
       margin-bottom:18px;
@@ -142,7 +140,6 @@
       box-shadow:0 0 0 4px rgba(11,42,111,0.08);
     }
 
-    /* --- LIST --- */
     .list{
       display:grid;
       gap:14px;
@@ -165,7 +162,6 @@
       line-height:1.25;
     }
 
-    /* --- PLAYER --- */
     .playerWrap{
       margin-top:20px;
       border:1px solid var(--border);
@@ -207,7 +203,6 @@
       border:0;
     }
 
-    /* --- MESSAGES --- */
     .error{
       margin:14px 0 0 0;
       padding:14px;
@@ -231,24 +226,20 @@
   <div class="frame">
     <div class="panel">
 
-      <!-- 1) LOGO AT VERY TOP -->
       <div class="logoRow">
         <img src="assets/fpt-logo.png" class="logo" alt="Future Perfect Tuitions">
       </div>
 
-      <!-- 2) TITLE -->
       <div class="titleRow">
         <h1 id="heading">Lessons</h1>
         <p class="sub" id="sub">Loading…</p>
       </div>
 
-      <!-- 3) BACK LEFT / REFRESH RIGHT -->
       <div class="actionRow">
         <a id="backBtn" class="btn" href="chooser.html">← Back</a>
         <button id="refreshBtn" class="btn primary" type="button">Refresh</button>
       </div>
 
-      <!-- 4) SEARCH BAR -->
       <div class="searchWrap">
         <div class="searchIcon">🔍</div>
         <input
@@ -262,10 +253,8 @@
 
       <div id="errorBox" class="error"></div>
 
-      <!-- 5) LESSON LIST -->
       <div id="list" class="list" aria-live="polite"></div>
 
-      <!-- PLAYER -->
       <div id="playerWrap" class="playerWrap">
         <div class="playerHeader">
           <div class="playerTitle" id="playerTitle">Lesson</div>
@@ -286,7 +275,6 @@
   const API = "https://fpt-lessons-api.futureperfectlessons.workers.dev";
 
   const qs = new URLSearchParams(location.search);
-  const u = (qs.get("u") || "").trim();
   const year = (qs.get("year") || "").trim();
 
   const heading = document.getElementById("heading");
@@ -315,7 +303,6 @@
   }
 
   function yearLabelToFull(y){
-    // "Y6" -> "Year 6", "Y411plus" etc will still show as-is
     const m = /^Y(\d+)$/.exec(y);
     return m ? `Year ${m[1]}` : y;
   }
@@ -335,6 +322,13 @@
   function closePlayer(){
     player.src = "about:blank";
     playerWrap.style.display = "none";
+  }
+
+  function getAuth(){
+    const u = (sessionStorage.getItem("fpt_u") || "").trim();
+    const p = (sessionStorage.getItem("fpt_p") || "").trim();
+    if(!u || !p) return null;
+    return { u, header: "Basic " + btoa(u + ":" + p) };
   }
 
   function render(){
@@ -377,25 +371,39 @@
     clearError();
     closePlayer();
 
-    if (!u || !year){
+    const auth = getAuth();
+    if(!auth){
+      location.href = "index.html";
+      return;
+    }
+
+    if (!year){
       heading.textContent = "Lessons";
       sub.textContent = "Missing link details.";
-      showError("Use a link like: lessons.html?u=demo&year=Y6");
+      showError("Use a link like: lessons.html?year=Y6");
       return;
     }
 
     heading.textContent = `Lessons – ${yearLabelToFull(year)}`;
-    backBtn.href = `chooser.html?u=${encodeURIComponent(u)}`;
-    sub.textContent = `Loading lessons for ${u}…`;
+    backBtn.href = "chooser.html";
+    sub.textContent = `Loading lessons for ${auth.u}…`;
 
     const url = new URL(API + "/lessons");
-    url.searchParams.set("u", u);
     url.searchParams.set("year", year);
 
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Authorization": auth.header }
+    });
+
     if(!res.ok){
       showError(`Failed to load lessons (${res.status}).`);
       sub.textContent = "Could not load lessons.";
+      if (res.status === 401) {
+        sessionStorage.removeItem("fpt_u");
+        sessionStorage.removeItem("fpt_p");
+        setTimeout(() => location.href = "index.html", 600);
+      }
       return;
     }
 
@@ -407,7 +415,7 @@
     }
 
     lessons = data;
-    sub.textContent = `Showing ${lessons.length} lesson(s) for ${u}.`;
+    sub.textContent = `Showing ${lessons.length} lesson(s) for ${auth.u}.`;
     render();
   }
 
